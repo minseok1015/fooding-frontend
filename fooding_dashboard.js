@@ -35,8 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
         productsLoaded = true;
         renderProducts(response.data, browseProductsEl, false);
       })
-      .catch((error) => {
-        console.error('상품 목록을 불러오지 못했습니다', error);
+      .catch(() => {
         browseProductsEl.innerHTML = '<p>상품 목록을 불러오지 못했습니다.</p>';
       });
   }
@@ -54,8 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
         myProductsLoaded = true;
         renderProducts(response.data, myProductsEl, true);
       })
-      .catch((error) => {
-        console.error('내 식재료 목록을 불러오지 못했습니다', error);
+      .catch(() => {
         myProductsEl.innerHTML = '<p>내 식재료 목록을 불러오지 못했습니다.</p>';
       });
   }
@@ -78,39 +76,40 @@ document.addEventListener('DOMContentLoaded', function () {
           : '<span class="badge exchange">교환</span>';
 
       let actionsHtml = `
-              <div class="product-actions">
-                <button class="contact-btn" data-user-id="${product.userId}">연락하기</button>
-              </div>
-            `;
+          <div class="product-actions">
+            <button class="contact-btn" data-user-id="${product.userId}">연락하기</button>
+          </div>
+        `;
 
       if (isMyProducts) {
         actionsHtml = `
-                <div class="product-actions">
-                  <button class="edit-btn">수정</button>
-                  <button class="delete-btn" data-id="${product.itemId}">삭제</button>
-                </div>
-              `;
+            <div class="product-actions">
+              <button class="edit-btn">수정</button>
+              <button class="delete-btn" data-id="${product.itemId}">삭제</button>
+            </div>
+          `;
       }
 
       productCard.innerHTML = `
-              <div class="product-image">
-                <span>썸네일 미리보기</span>
-                ${statusBadge}
-              </div>
-              <div class="product-info">
-                <h3>${product.itemName}</h3>
-                <div class="category">${
-                  product.categoryName || '카테고리 없음'
-                }</div>
-                <div class="description">${
-                  product.itemDescription || '설명 없음'
-                }</div>
-                <div class="quantity">수량: ${product.quantity}</div>
-                <div class="expiry">유통기한: ${product.expirationDate}</div>
-                <div class="location">위치: ${product.itemLocation}</div>
-              </div>
-              ${actionsHtml}
-            `;
+          <div class="product-image">
+            <img src="${product.thumbnailUrl}" alt="${product.itemName}" />
+            ${statusBadge}
+          </div>
+          <div class="product-info">
+            <h3>${product.itemName}</h3>
+            <div class="category">${
+              product.categoryName || '카테고리 없음'
+            }</div>
+            <div class="description">${
+              product.itemDescription || '설명 없음'
+            }</div>
+            <div class="quantity">수량: ${product.quantity}</div>
+            <div class="expiry">유통기한: ${product.expirationDate}</div>
+            <div class="location">위치: ${product.itemLocation}</div>
+            <div class="registered">등록자: ${product.registeredBy}</div>
+          </div>
+          ${actionsHtml}
+        `;
 
       container.appendChild(productCard);
     });
@@ -124,17 +123,12 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('유효하지 않은 사용자입니다.');
             return;
           }
-
-          // 👉 클릭한 userId를 localStorage에 저장
           localStorage.setItem('contactUserId', userId);
-
-          // 👉 yourpage.html로 이동
           window.location.href = 'yourpage.html';
         });
       });
     }
 
-    // 삭제 버튼 이벤트
     if (isMyProducts) {
       const deleteButtons = container.querySelectorAll('.delete-btn');
       deleteButtons.forEach((button) => {
@@ -157,13 +151,11 @@ document.addEventListener('DOMContentLoaded', function () {
         alert('식재료가 삭제되었습니다.');
         loadMyProducts();
       })
-      .catch((error) => {
-        console.error('식재료 삭제 실패', error);
+      .catch(() => {
         alert('식재료 삭제에 실패했습니다.');
       });
   }
 
-  // 로그인 상태 확인
   const userId = localStorage.getItem('userId');
   if (!userId) {
     window.location.href = 'fooding_login.html';
