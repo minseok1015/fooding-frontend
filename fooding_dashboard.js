@@ -141,12 +141,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function deleteItem(itemId) {
-    const userId = localStorage.getItem('userId');
-
     axios
-      .delete(`http://3.37.172.142:8081/api/items/${itemId}?userId=${userId}`)
-      .then(() => {
-        alert('식재료가 삭제되었습니다.');
+      .delete(`http://3.37.172.142:8081/api/items/${itemId}`)
+      .then((response) => {
+        alert(response.data.message || '식재료가 삭제되었습니다.');
         loadMyProducts();
       })
       .catch(() => {
