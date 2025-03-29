@@ -91,25 +91,23 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       productCard.innerHTML = `
-          <div class="product-image">
-            <img src="${product.thumbnailUrl}" alt="${product.itemName}" />
-            ${statusBadge}
-          </div>
-          <div class="product-info">
-            <h3>${product.itemName}</h3>
-            <div class="category">${
-              product.categoryName || '카테고리 없음'
-            }</div>
-            <div class="description">${
-              product.itemDescription || '설명 없음'
-            }</div>
-            <div class="quantity">수량: ${product.quantity}</div>
-            <div class="expiry">유통기한: ${product.expirationDate}</div>
-            <div class="location">위치: ${product.itemLocation}</div>
-            <div class="registered">등록자: ${product.registeredBy}</div>
-          </div>
-          ${actionsHtml}
-        `;
+  <div class="product-image">
+    <img src="${product.thumbnailUrl || 'noimage.png'}" alt="${
+        product.itemName
+      }" />
+    ${statusBadge}
+  </div>
+  <div class="product-info">
+    <h3>${product.itemName}</h3>
+    <div class="category">${product.categoryName || '카테고리 없음'}</div>
+    <div class="description">${product.itemDescription || '설명 없음'}</div>
+    <div class="quantity">수량: ${product.quantity}</div>
+    <div class="expiry">유통기한: ${product.expirationDate}</div>
+    <div class="location">위치: ${product.itemLocation}</div>
+    <div class="registered">등록자: ${product.registeredBy}</div>
+  </div>
+  ${actionsHtml}
+`;
 
       container.appendChild(productCard);
     });
