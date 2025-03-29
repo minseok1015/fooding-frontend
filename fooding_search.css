@@ -191,3 +191,31 @@
     grid-template-columns: 1fr;
   }
 }
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.navbar {
+  background-color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Noto Sans KR', sans-serif;
+  box-shadow: none; /* 밑줄 제거 */
+  border-bottom: none; /* 밑줄 제거 */
+}
+
+.logo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #111;
+  text-decoration: none;
+}
