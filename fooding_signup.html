@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>회원가입 - Fooding</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+    />
+    <link rel="stylesheet" href="common.css" />
+    <link rel="stylesheet" href="fooding_signup.css" />
+  </head>
+
+  <body>
+    <header>
+      <!-- 네비게이션 바는 JavaScript로 삽입됩니다 -->
+    </header>
+
+    <div class="signup-container">
+      <div class="signup-box">
+        <h2>회원가입</h2>
+        <p class="subtitle">계정을 만들어 식재료 교환 및 나눔을 시작하세요</p>
+
+        <div class="tab">
+          <button class="tab-btn active" data-type="personal">개인</button>
+          <button class="tab-btn" data-type="business">사업자(요식업)</button>
+        </div>
+
+        <!-- 개인 회원가입 폼 -->
+        <form id="personal-form" class="signup-form">
+          <label>이름</label>
+          <input type="text" id="name" placeholder="이름" required />
+
+          <label>이메일</label>
+          <input type="email" id="email" placeholder="이메일 주소" required />
+
+          <label>지역</label>
+          <input
+            type="text"
+            id="location"
+            placeholder="지역을 입력하세요"
+            required
+          />
+
+          <label>전화번호</label>
+          <input
+            type="text"
+            id="phoneNumber"
+            placeholder="전화번호를 입력하세요"
+            required
+          />
+
+          <label>비밀번호</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="비밀번호"
+            required
+          />
+
+          <label>비밀번호 확인</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            placeholder="비밀번호 확인"
+            required
+          />
+
+          <!-- 비밀번호 불일치 메시지 -->
+          <p
+            id="pw-error"
+            style="
+              color: red;
+              font-size: 0.95rem;
+              font-weight: bold;
+              display: none;
+              margin-top: 0.75rem;
+              margin-bottom: 1.2rem;
+            "
+          >
+            비밀번호가 일치하지 않습니다.
+          </p>
+
+          <label class="agree">
+            <input type="checkbox" id="agreeTerms" required />
+            이용약관 및 개인정보 처리방침에 동의합니다
+          </label>
+
+          <button type="submit" class="signup-btn">회원가입</button>
+        </form>
+
+        <!-- 사업자 폼 (비활성 상태) -->
+        <form id="business-form" class="signup-form hidden">
+          <label>상호명</label>
+          <input type="text" placeholder="상호명" />
+          <label>사업자 등록 번호</label>
+          <input type="text" placeholder="사업자 등록 번호" />
+          <label>이메일</label>
+          <input type="email" placeholder="이메일 주소" />
+          <label>연락처</label>
+          <input type="text" placeholder="연락처" />
+          <label>주소</label>
+          <input type="text" placeholder="주소" />
+          <label>비밀번호</label>
+          <input type="password" placeholder="비밀번호" />
+          <label>비밀번호 확인</label>
+          <input type="password" placeholder="비밀번호 확인" />
+          <label class="agree">
+            <input type="checkbox" />
+            이용약관 및 개인정보 처리방침에 동의합니다
+          </label>
+          <button type="button" class="signup-btn disabled" disabled>
+            회원가입 (준비 중)
+          </button>
+        </form>
+
+        <p class="login-link">
+          이미 계정이 있으신가요? <a href="fooding_login.html">로그인</a>
+        </p>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="navbar.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // 로그인 상태 확인 및 리다이렉트
+        const userId = localStorage.getItem('userId');
+        if (userId) {
+          // 이미 로그인된 상태면 대시보드로 리다이렉트
+          window.location.href = 'after_login.html';
+        }
+
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const personalForm = document.getElementById('personal-form');
+        const businessForm = document.getElementById('business-form');
+        const pwErrorMsg = document.getElementById('pw-error');
+
+        // 탭 전환
+        tabButtons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            tabButtons.forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const type = btn.getAttribute('data-type');
+
+            if (type === 'personal') {
+              personalForm.classList.remove('hidden');
+              businessForm.classList.add('hidden');
+            } else {
+              personalForm.classList.add('hidden');
+              businessForm.classList.remove('hidden');
+            }
+          });
+        });
+
+        // 회원가입 제출 처리
+        personalForm.addEventListener('submit', function (event) {
+          event.preventDefault();
+
+          const name = document.getElementById('name').value;
+          const email = document.getElementById('email').value;
+          const location = document.getElementById('location').value;
+          const phoneNumber = document.getElementById('phoneNumber').value;
+          const password = document.getElementById('password').value;
+          const confirmPassword =
+            document.getElementById('confirmPassword').value;
+          const agreeChecked = document.getElementById('agreeTerms').checked;
+
+          if (
+            !name ||
+            !email ||
+            !location ||
+            !phoneNumber ||
+            !password ||
+            !confirmPassword
+          ) {
+            alert('모든 필드를 입력해주세요.');
+            return;
+          }
+
+          if (password !== confirmPassword) {
+            pwErrorMsg.style.display = 'block'; // 오류 메시지 표시
+            return;
+          } else {
+            pwErrorMsg.style.display = 'none'; // 오류 메시지 숨김
+          }
+
+          if (!agreeChecked) {
+            alert('이용약관 및 개인정보 처리방침에 동의해주세요.');
+            return;
+          }
+
+          // 서버에 보낼 JSON 데이터
+          const signupData = {
+            userName: name,
+            email: email,
+            location: location,
+            phoneNumber: phoneNumber,
+            userPassword: password,
+          };
+
+          console.log('보낼 데이터:', signupData);
+
+          // 서버로 POST 요청 보내기
+          axios
+            .post('http://3.37.172.142:8081/api/users/signup', signupData)
+            .then((response) => {
+              console.log('회원가입 성공', response.data);
+              alert('회원가입 완료!');
+              window.location.href = 'fooding_login.html';
+            })
+            .catch((error) => {
+              console.error('회원가입 실패', error);
+
+              if (error.response) {
+                console.log('상태 코드:', error.response.status);
+                console.log('응답 데이터:', error.response.data);
+                alert(
+                  '서버 응답: ' +
+                    error.response.status +
+                    ' - ' +
+                    JSON.stringify(error.response.data)
+                );
+              } else if (error.request) {
+                alert('서버에 요청을 보냈지만 응답이 없습니다.');
+              } else {
+                alert('요청 설정 중 오류 발생: ' + error.message);
+              }
+            });
+        });
+      });
+    </script>
+  </body>
+</html>

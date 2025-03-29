@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>식재료 거래 대시보드</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+    />
+    <link rel="stylesheet" href="common.css" />
+    <link rel="stylesheet" href="fooding_dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Axios 라이브러리 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+
+  <body>
+    <header>
+      <!-- 네비게이션 바는 JavaScript로 삽입됩니다 -->
+    </header>
+
+    <main class="container">
+      <div class="dashboard-header">
+        <h1>대시보드</h1>
+        <button class="register-btn" onclick="location.href='new-item.html'">
+          식재료 등록하기
+        </button>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="browse">둘러보기</button>
+        <button class="tab-btn" data-tab="my-ingredients">내 식재료</button>
+        <button class="tab-btn" data-tab="transactions">거래 내역</button>
+      </div>
+
+      <!-- 둘러보기 탭 -->
+      <div class="tab-content active" id="browse">
+        <div class="product-grid" id="browse-products">
+          <!-- API로 데이터를 가져와 동적으로 채워질 영역 -->
+          <div class="loading">데이터를 불러오는 중...</div>
+        </div>
+      </div>
+
+      <!-- 내 식재료 탭 -->
+      <div class="tab-content" id="my-ingredients">
+        <div class="product-grid" id="my-products">
+          <!-- API로 데이터를 가져와 동적으로 채워질 영역 -->
+          <div class="loading">데이터를 불러오는 중...</div>
+        </div>
+      </div>
+
+      <!-- 거래 내역 탭 -->
+      <div class="tab-content" id="transactions">
+        <div class="transaction-history">
+          <div class="history-header">
+            <h2>거래 내역</h2>
+            <p>최근 거래 내역을 확인하세요.</p>
+          </div>
+
+          <div class="transaction-list">
+            <!-- 거래 항목 1 -->
+            <div class="transaction-item">
+              <div class="transaction-info">
+                <h3>양파 2kg 나눔</h3>
+                <p>2025년 3월 25일</p>
+              </div>
+              <div class="transaction-feedback">
+                <span class="feedback-label">완료</span>
+                <div class="feedback-icon positive">
+                  <i class="fa-solid fa-thumbs-up"></i>
+                  <span>좋아요 받음</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 거래 항목 2 -->
+            <div class="transaction-item">
+              <div class="transaction-info">
+                <h3>당근 1kg 교환</h3>
+                <p>2025년 3월 20일</p>
+              </div>
+              <div class="transaction-feedback">
+                <span class="feedback-label">완료</span>
+                <div class="feedback-icon negative">
+                  <i class="fa-solid fa-thumbs-down"></i>
+                  <span>싫어요 받음</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 거래 항목 3 -->
+            <div class="transaction-item">
+              <div class="transaction-info">
+                <h3>감자 3kg 나눔</h3>
+                <p>2025년 3월 15일</p>
+              </div>
+              <div class="transaction-feedback">
+                <span class="feedback-label">완료</span>
+                <div class="feedback-icon positive">
+                  <i class="fa-solid fa-thumbs-up"></i>
+                  <span>좋아요 받음</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="navbar.js"></script>
+    <script src="fooding_dashboard.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // 로그인 상태 확인
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+          // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+          window.location.href = 'fooding_login.html';
+        }
+      });
+    </script>
+  </body>
+</html>

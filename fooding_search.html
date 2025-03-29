@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>식재료 검색 - Fooding</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+    />
+    <link rel="stylesheet" href="common.css" />
+    <link rel="stylesheet" href="fooding_search.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+
+  <body>
+    <header>
+      <!-- 네비게이션 바 -->
+      <nav class="navbar">
+        <div class="container">
+          <a href="fooding_dashboard.html" class="logo">푸딩</a>
+          <ul class="nav-links">
+            <li><a href="fooding_dashboard.html">대시보드</a></li>
+            <li>
+              <a href="fooding_search.html" class="active">식재료 검색</a>
+            </li>
+            <li><a href="fooding_new-item.html">식재료 등록</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="exchange-container">
+        <div class="exchange-box">
+          <h2>식재료 검색</h2>
+          <p class="subtitle">원하는 식재료를 검색하여 교환 신청해보세요</p>
+
+          <div class="search-group">
+            <input
+              type="text"
+              id="search-input"
+              placeholder="찾으시는 식재료를 입력하세요"
+            />
+            <button class="search-btn" id="search-btn">🔍</button>
+          </div>
+          <button id="back-btn" class="back-btn hidden">돌아가기</button>
+        </div>
+
+        <!-- 검색 결과 영역 -->
+        <div id="item-list" class="item-list"></div>
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const itemListEl = document.getElementById('item-list');
+        const searchBtn = document.getElementById('search-btn');
+        const searchInput = document.getElementById('search-input');
+        const backBtn = document.getElementById('back-btn');
+
+        let allItems = []; // API 데이터 캐싱
+        let isLoaded = false;
+
+        // 초기 API 요청 (1번만)
+        if (!isLoaded) {
+          axios
+            .get('http://3.37.172.142:8081/api/items')
+            .then((response) => {
+              allItems = response.data;
+              isLoaded = true;
+            })
+            .catch((error) => {
+              console.error('상품 목록 불러오기 실패', error);
+              itemListEl.innerHTML =
+                '<p>상품 목록을 불러오지 못했습니다. 새로고침 해주세요.</p>';
+            });
+        }
+
+        // 검색 버튼 클릭 시 필터링
+        searchBtn.addEventListener('click', handleSearch);
+
+        // 엔터키 검색 가능
+        searchInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSearch();
+          }
+        });
+
+        backBtn.addEventListener('click', () => {
+          itemListEl.innerHTML = '';
+          searchInput.value = '';
+          backBtn.classList.add('hidden');
+        });
+
+        // 검색 함수
+        function handleSearch() {
+          const keyword = searchInput.value.trim();
+          if (!keyword) {
+            alert('검색어를 입력해주세요.');
+            return;
+          }
+          searchItems(keyword);
+        }
+
+        // 필터링
+        function searchItems(keyword) {
+          if (allItems.length === 0) {
+            alert('상품 데이터가 없습니다.');
+            return;
+          }
+          const filtered = allItems.filter((item) =>
+            item.itemName.includes(keyword)
+          );
+          renderItems(filtered);
+        }
+
+        // 렌더링
+        function renderItems(items) {
+          itemListEl.innerHTML = '';
+
+          if (items.length === 0) {
+            backBtn.classList.add('hidden');
+            itemListEl.innerHTML = '<p>검색 결과가 없습니다.</p>';
+            return;
+          }
+
+          backBtn.classList.remove('hidden');
+
+          items.forEach((item) => {
+            const imageUrl = item.thumbnailUrl || 'default.jpeg'; // null-safe 처리
+
+            const itemCard = document.createElement('div');
+            itemCard.className = 'item-card';
+            itemCard.innerHTML = `
+              <div class="item-header">
+                <strong>${item.itemName}</strong>
+                <span class="badge">${
+                  item.itemStatus === 'SHARE' ? '나눔' : '교환'
+                }</span>
+              </div>
+              <div class="item-image">
+                <img src="${imageUrl}" alt="${
+              item.itemName
+            }" onerror="this.src='default.png'">
+              </div>
+              <div class="item-category">${
+                item.categoryName || '카테고리 없음'
+              }</div>
+              <p>${item.itemDescription}</p>
+              <p><strong>${item.quantity}</strong></p>
+              <p>📅 유통기한: ${item.expirationDate}</p>
+              <p>📍 ${item.itemLocation}</p>
+              <p>👤 ${item.registeredBy || '알 수 없음'}</p>
+              <button class="contact-btn">연락하기</button>
+            `;
+            itemListEl.appendChild(itemCard);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

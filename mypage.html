@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>내 프로필 - Fooding</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+    />
+    <link rel="stylesheet" href="common.css" />
+    <link rel="stylesheet" href="mypage.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <!-- 네비게이션 바는 JavaScript로 삽입됩니다 -->
+    </header>
+
+    <div class="profile-container">
+      <div class="profile-box">
+        <div class="profile-header">
+          <h2>내 프로필</h2>
+          <button class="back-btn" onclick="location.href='after_login.html'">
+            돌아가기
+          </button>
+        </div>
+        <p class="subtitle">내 정보 및 등록한 식재료</p>
+
+        <div class="user-info">
+          <div class="profile-img"></div>
+          <div class="user-details" id="user-details">
+            <p>정보를 불러오는 중...</p>
+          </div>
+        </div>
+
+        <h3 class="section-title">등록된 식재료</h3>
+        <div id="ingredients-container">
+          <p>등록된 식재료를 불러오는 중...</p>
+        </div>
+
+        <button
+          class="new-register-btn"
+          onclick="location.href='new-item.html'"
+        >
+          새 식재료 등록하기
+        </button>
+      </div>
+    </div>
+
+    <script src="navbar.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // 로그인 상태 확인
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+          // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+          window.location.href = 'fooding_login.html';
+          return;
+        }
+
+        const userDetailsEl = document.getElementById('user-details');
+        const ingredientsContainerEl = document.getElementById(
+          'ingredients-container'
+        );
+
+        // 사용자 정보 가져오기
+        axios
+          .get(`http://3.37.172.142:8081/api/users/${userId}/username`)
+          .then((response) => {
+            const userName = response.data.userName;
+
+            // 임시로 사용자 정보 표시 (실제로는 API에서 더 많은 정보를 가져와야 함)
+            userDetailsEl.innerHTML = `
+            <strong>${userName}</strong>
+            <p>📞 연락처 정보</p>
+            <p>📍 지역 정보</p>
+          `;
+          })
+          .catch((error) => {
+            console.error('사용자 정보를 가져오지 못했습니다', error);
+            userDetailsEl.innerHTML =
+              '<p>사용자 정보를 불러오지 못했습니다.</p>';
+          });
+
+        // 사용자의 등록된 식재료 가져오기
+        axios
+          .get(`http://3.37.172.142:8081/api/items/my?userId=${userId}`)
+          .then((response) => {
+            const items = response.data;
+
+            if (items.length === 0) {
+              ingredientsContainerEl.innerHTML =
+                '<p>등록된 식재료가 없습니다.</p>';
+              return;
+            }
+
+            ingredientsContainerEl.innerHTML = '';
+
+            // 최대 3개의 식재료만 표시
+            const displayItems = items.slice(0, 3);
+
+            displayItems.forEach((item) => {
+              const itemElement = document.createElement('div');
+              itemElement.className = 'ingredient-card';
+              itemElement.innerHTML = `
+              <div class="top-row">
+                <strong>${item.itemName}</strong>
+                <span class="weight">${item.quantity || '수량 정보 없음'}</span>
+              </div>
+              <p class="date">📅 유통기한: ${
+                item.expirationDate || '정보 없음'
+              }</p>
+              <p class="comment">⏱ ${
+                item.itemDescription || '추가 설명 없음'
+              }</p>
+            `;
+              ingredientsContainerEl.appendChild(itemElement);
+            });
+
+            // 더 많은 식재료가 있는 경우 메시지 추가
+            if (items.length > 3) {
+              const moreMessage = document.createElement('p');
+              moreMessage.textContent = `외 ${
+                items.length - 3
+              }개의 식재료가 있습니다.`;
+              moreMessage.style.textAlign = 'center';
+              moreMessage.style.marginTop = '1rem';
+              ingredientsContainerEl.appendChild(moreMessage);
+            }
+          })
+          .catch((error) => {
+            console.error('식재료 정보를 가져오지 못했습니다', error);
+            ingredientsContainerEl.innerHTML =
+              '<p>등록된 식재료를 불러오지 못했습니다.</p>';
+          });
+      });
+    </script>
+  </body>
+</html>

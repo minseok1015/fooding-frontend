@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>식재료 등록 - 푸딩</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+    />
+    <link rel="stylesheet" href="common.css" />
+    <link rel="stylesheet" href="new-item.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <!-- 네비게이션 바는 JavaScript로 삽입됩니다 -->
+    </header>
+
+    <main>
+      <div class="container">
+        <div class="card form-card">
+          <div class="card-header">
+            <h2 class="card-title">식재료 등록</h2>
+            <p class="card-description">등록할 식재료 정보를 입력하세요.</p>
+          </div>
+          <div class="card-content">
+            <form id="newItemForm" class="form">
+              <div class="form-group">
+                <label for="name">식재료 이름</label>
+                <input type="text" id="name" required />
+              </div>
+
+              <div class="form-group">
+                <label for="quantity">수량</label>
+                <input type="text" id="quantity" required />
+              </div>
+
+              <div class="form-group">
+                <label for="expiryDate">유통기한</label>
+                <input type="text" id="expiryDate" required />
+              </div>
+
+              <div class="form-group">
+                <label for="location">위치</label>
+                <input type="text" id="location" required />
+              </div>
+
+              <div class="form-group">
+                <label>카테고리</label>
+                <select id="category" required>
+                  <option value="">카테고리 선택</option>
+                  <option value="1">채소</option>
+                  <option value="2">과일</option>
+                  <option value="3">육류</option>
+                  <option value="4">해산물</option>
+                  <option value="5">곡류/견과류</option>
+                  <option value="6">유제품</option>
+                  <option value="7">조미료</option>
+                  <option value="8">음료</option>
+                  <option value="9">냉동식품</option>
+                  <option value="10">간편식</option>
+                  <option value="11">기타</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>나눔/교환 선택</label>
+                <div class="radio-group">
+                  <div class="radio-item">
+                    <input
+                      type="radio"
+                      id="share"
+                      name="type"
+                      value="SHARING"
+                      checked
+                    />
+                    <label for="share">나눔</label>
+                  </div>
+                  <div class="radio-item">
+                    <input
+                      type="radio"
+                      id="exchange"
+                      name="type"
+                      value="EXCHANGE"
+                    />
+                    <label for="exchange">교환</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="description">추가 설명</label>
+                <textarea id="description"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="thumbnail">썸네일 이미지</label>
+                <input type="file" id="thumbnail" accept="image/*" />
+                <div id="thumbnailPreview"></div>
+              </div>
+            </form>
+          </div>
+          <div class="card-footer">
+            <div class="button-group-right">
+              <button class="btn btn-outline" id="cancelButton">취소</button>
+              <button
+                type="submit"
+                form="newItemForm"
+                class="btn btn-primary"
+                id="submitButton"
+              >
+                등록하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="navbar.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // 로그인 상태 확인
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+          // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+          window.location.href = 'fooding_login.html';
+          return;
+        }
+
+        flatpickr('#expiryDate', {
+          locale: 'ko',
+          dateFormat: 'Y-m-d',
+          minDate: 'today',
+          disableMobile: true,
+        });
+
+        const thumbnailInput = document.getElementById('thumbnail');
+        const thumbnailPreview = document.getElementById('thumbnailPreview');
+
+        if (thumbnailInput) {
+          thumbnailInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                thumbnailPreview.innerHTML = `<img src="${e.target.result}" alt="썸네일 미리보기">`;
+              };
+              reader.readAsDataURL(file);
+            } else {
+              thumbnailPreview.innerHTML = '';
+            }
+          });
+        }
+
+        const cancelButton = document.getElementById('cancelButton');
+        if (cancelButton) {
+          cancelButton.addEventListener('click', () => {
+            if (
+              confirm('작성 중인 내용이 저장되지 않습니다. 취소하시겠습니까?')
+            ) {
+              window.location.href = 'fooding_dashboard.html';
+            }
+          });
+        }
+
+        const newItemForm = document.getElementById('newItemForm');
+        if (newItemForm) {
+          newItemForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const itemName = document.getElementById('name').value;
+            const quantity = document.getElementById('quantity').value;
+            const expirationDate = document.getElementById('expiryDate').value;
+            const itemLocation = document.getElementById('location').value;
+            const categoryId = document.getElementById('category').value;
+            const typeValue = document.querySelector(
+              'input[name="type"]:checked'
+            ).value;
+            const itemStatus = typeValue === '나눔' ? 'SHARE' : 'EXCHANGE';
+            const itemDescription =
+              document.getElementById('description').value;
+            const thumbnailFile = document.getElementById('thumbnail').files[0];
+
+            const formData = new FormData();
+
+            // JSON request
+            formData.append(
+              'request',
+              new Blob(
+                [
+                  JSON.stringify({
+                    itemName,
+                    quantity,
+                    expirationDate,
+                    itemLocation,
+                    categoryId,
+                    itemStatus,
+                    itemDescription,
+                  }),
+                ],
+                { type: 'application/json' }
+              )
+            );
+
+            if (thumbnailFile) {
+              formData.append('thumbnailImage', thumbnailFile);
+            }
+
+            axios
+              .post(
+                `http://3.37.172.142:8081/api/items/register?userId=${userId}`,
+                formData,
+                {
+                  headers: { 'Content-Type': 'multipart/form-data' },
+                }
+              )
+              .then(() => {
+                alert('식재료가 성공적으로 등록되었습니다.');
+                window.location.href = 'fooding_dashboard.html';
+              })
+              .catch((error) => {
+                console.error('식재료 등록 오류:', error);
+                alert(
+                  '등록 실패: ' +
+                    (error.response?.data?.message ||
+                      '서버 오류가 발생했습니다.')
+                );
+              });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
