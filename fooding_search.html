@@ -65,7 +65,7 @@
         // 초기 API 요청 (1번만)
         if (!isLoaded) {
           axios
-            .get('http://3.37.172.142:8081/api/items')
+            .get('https://3.37.172.142:8081/api/items')
             .then((response) => {
               allItems = response.data;
               isLoaded = true;

@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
       '<div class="loading">데이터를 불러오는 중...</div>';
 
     axios
-      .get('http://3.37.172.142:8081/api/items')
+      .get('https://3.37.172.142:8081/api/items')
       .then((response) => {
         productsLoaded = true;
         renderProducts(response.data, browseProductsEl, false);
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
       '<div class="loading">데이터를 불러오는 중...</div>';
 
     axios
-      .get(`http://3.37.172.142:8081/api/items/my?userId=${userId}`)
+      .get(`https://3.37.172.142:8081/api/items/my?userId=${userId}`)
       .then((response) => {
         myProductsLoaded = true;
         renderProducts(response.data, myProductsEl, true);
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function deleteItem(itemId) {
     axios
-      .delete(`http://3.37.172.142:8081/api/items/${itemId}`)
+      .delete(`https://3.37.172.142:8081/api/items/${itemId}`)
       .then((response) => {
         alert(response.data.message || '식재료가 삭제되었습니다.');
         loadMyProducts();

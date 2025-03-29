@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // API 요청
   axios
-    .get(`http://3.37.172.142:8081/api/users/${contactUserId}/mypage`)
+    .get(`https://3.37.172.142:8081/api/users/${contactUserId}/mypage`)
     .then((response) => {
       const { user, items } = response.data;
 

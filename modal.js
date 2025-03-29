@@ -98,7 +98,7 @@ class Modal {
 
     // API 호출
     axios
-      .get(`http://3.37.172.142:8081/api/users/${userId}/username`)
+      .get(`https://3.37.172.142:8081/api/users/${userId}/username`)
       .then((response) => {
         // 사용자 기본 정보 표시
         const userName = response.data.userName;
@@ -113,7 +113,7 @@ class Modal {
 
         // 사용자의 식재료 목록 가져오기
         return axios.get(
-          `http://3.37.172.142:8081/api/items/my?userId=${userId}`
+          `https://3.37.172.142:8081/api/items/my?userId=${userId}`
         );
       })
       .then((response) => {

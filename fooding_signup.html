@@ -205,7 +205,7 @@
 
           // 서버로 POST 요청 보내기
           axios
-            .post('http://3.37.172.142:8081/api/users/signup', signupData)
+            .post('https://3.37.172.142:8081/api/users/signup', signupData)
             .then((response) => {
               console.log('회원가입 성공', response.data);
               alert('회원가입 완료!');
